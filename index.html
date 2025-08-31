@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Run Scripts</title>
+  <style>
+    body { font-family: Arial; background:#f4f6f9; padding:20px; }
+    .container { max-width:600px; margin:auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+    select,button { padding:10px; margin:10px 0; width:100%; border-radius:8px; border:1px solid #ddd; }
+    pre { background:#f8f9fa; padding:15px; border-radius:8px; overflow:auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Script Runner</h2>
+    <label>Select Script:</label>
+    <select id="scriptSelect">
+      <option value="ec2_details.py">EC2 Details</option>
+      <option value="rds_details.py">RDS Details</option>
+    </select>
+    <button onclick="runScript()">Run</button>
+
+    <h3>Output:</h3>
+    <pre id="output">Waiting for script...</pre>
+  </div>
+
+  <script>
+    const API_URL = "https://my-script-runner.onrender.com"; // <-- Replace with your backend URL
+
+    async function runScript() {
+      const script = document.getElementById("scriptSelect").value;
+      const output = document.getElementById("output");
+      output.textContent = "Running script...";
+
+      try {
+        const response = await fetch(`${API_URL}/run`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ script })
+        });
+
+        const result = await response.json();
+        output.textContent = result.output || "❌ " + result.error;
+      } catch (err) {
+        output.textContent = "❌ Error connecting to backend";
+      }
+    }
+  </script>
+</body>
+</html>
